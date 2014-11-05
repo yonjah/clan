@@ -1,0 +1,19 @@
+{
+  "name": "clan",
+  "version": "0.0.1",
+  "description": "Yet another inheritance module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "class",
+    "inheritance",
+    "mixin"
+  ],
+  "author": "Yoni Jah",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "~2.4.1"
+  }
+}
