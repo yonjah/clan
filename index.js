@@ -138,10 +138,14 @@
 	}
 
 	baseObj = extend({}, baseObj);
-
-	exp = baseObj.extend;
 	baseMixin = mixin({}, baseMixin);
-	exp.mixin = baseMixin.mixin;
+
+	exp = function (parent, child) {
+		return extend(child ? parent : baseObj, child || parent);
+	};
+	exp.mixin = function (parent, child) {
+		return mixin(child ? parent : baseMixin, child || parent);
+	};
 	exp.debug = function (val){
 		debug = val;
 	};
