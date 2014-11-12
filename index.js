@@ -1,6 +1,7 @@
 (function () {
 	"use strict";
 	var exp,
+		debug = false,
 		_ = {
 			extend: function extendObject (target, source) {
 				Object.keys(source).forEach(function (key){
@@ -9,7 +10,7 @@
 				return target;
 			}
 		}, baseMixin = {
-			implements: function calnImplements (source) {
+			implements: function clanImplements (source) {
 				return Object.keys(source.prototype || source).reduce(function (res, key) {
 					return res && this[key] !== undefined;
 				}.bind(this), true);
@@ -17,14 +18,14 @@
 		},
 		baseObj = {
 			name: 'baseObject',
-			create:  function calnCreate (options) {
+			create:  function clanCreate (options) {
 				if (isFunc(this._c) && !(this instanceof this._c)) {
 					return new this._c(options); // re call create with constructor
 				}
 				Object.defineProperty(this, '_instance', {value: true});
 				return this.init(options);
 			},
-			init:  function calnInit (options) {
+			init:  function clanInit (options) {
 				if (!this._instance) {
 					throw new Error('Cannot call init before create');
 				}
@@ -33,13 +34,13 @@
 				!options.create && Object.defineProperty(this, 'create', {value: undefined});
 				return _.extend(this, options);
 			},
-			toString: function calnToString () {
+			toString: function clanToString () {
 				return this._id + (this.isInstance()? '(I)' : '');
 			},
 			isInstance: function isInstance () {
 				return this._instance || false;
 			},
-			extend: function calnExtend (obj) {
+			extend: function clanExtend (obj) {
 				return extend.call(null, this, obj);
 			}
 		};
@@ -62,9 +63,10 @@
 				this._super = lastSuper;
 				return result;
 			};
-		//for easier debugging
-		Object.defineProperty(func, '_target', {value: childFunc._target || childFunc});
-		func.toString = func._target.toString.bind(func._target);
+		if (debug) { //easy access to original func without the wrapper to make debugging easier
+			Object.defineProperty(func, '_target', {value: childFunc._target || childFunc});
+			func.toString = func._target.toString.bind(func._target);
+		}
 		return func;
 	}
 
@@ -113,8 +115,13 @@
 		parent = parent.prototype || parent;
 		id = (parent._id ? parent._id + '_':'') + (child.name || 'E');
 
-
-		eval('Constructor = function ' + id + '(){ return this.create.apply(this, arguments)}');
+		if (debug) { //object name in console
+			eval('Constructor = function ' + id + '(){return this.create.apply(this, arguments);}');
+		} else {
+			Constructor = function Constructor (){
+				return this.create.apply(this, arguments);
+			};
+		}
 
 		obj = Object.create(parent);
 
@@ -135,6 +142,9 @@
 	exp = baseObj.extend;
 	baseMixin = mixin({}, baseMixin);
 	exp.mixin = baseMixin.mixin;
+	exp.debug = function (val){
+		debug = val;
+	};
 	//module detection and define code from lodash http://lodash.com
 	/*globals window, define*/
 	var root = (typeof window !== 'undefined') && window || this,
