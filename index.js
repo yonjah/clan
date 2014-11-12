@@ -1,4 +1,4 @@
-var clan = (function (global) {
+(function () {
 	"use strict";
 	var exp,
 		_ = {
@@ -18,13 +18,11 @@ var clan = (function (global) {
 		baseObj = {
 			name: 'baseObject',
 			create:  function calnCreate (options) {
-				var obj;
 				if (isFunc(this._c) && !(this instanceof this._c)) {
 					return new this._c(options); // re call create with constructor
 				}
-				obj = this;
-				Object.defineProperty(obj, '_instance', {value: true});
-				return obj.init(options);
+				Object.defineProperty(this, '_instance', {value: true});
+				return this.init(options);
 			},
 			init:  function calnInit (options) {
 				if (!this._instance) {
@@ -137,8 +135,30 @@ var clan = (function (global) {
 	exp = baseObj.extend;
 	baseMixin = mixin({}, baseMixin);
 	exp.mixin = baseMixin.mixin;
+	//module detection and define code from lodash http://lodash.com
+	/*globals window, define*/
+	var root = (typeof window !== 'undefined') && window || this,
+		freeExports = (typeof exports !== 'undefined') && exports && !exports.nodeType && exports,
+		freeModule = (typeof module !== 'undefined') && module && !module.nodeType && module,
+		moduleExports = freeModule && freeModule.exports === freeExports && freeExports,
+		freeGlobal = (typeof global !== 'undefined') && global;
 
-	return exp;
-}(this || window || global));
+	if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
+		root = freeGlobal;
+	}
 
-module.exports = clan;
+	if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
+		define(function() {
+			return exp;
+		});
+	} else if (freeExports && freeModule) {
+		if (moduleExports) {
+			freeModule.exports = exp;
+		}
+		else {
+			freeExports.clan = exp;
+		}
+	} else {
+		root.clan = exp;
+	}
+}.call(this));
