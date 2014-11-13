@@ -110,11 +110,16 @@
 		parent = parent.prototype || parent;
 		id = (parent._id ? parent._id + '_':'') + (child.name || 'E');
 
+		Constructor = function ClanConstructor () {
+			if (!(this instanceof Constructor)){
+				throw new Error('Missing `new` pefix when invoking constructor ' + id);
+			}
+			return this.create && this.create.apply(this, arguments);
+		};
 		if (debug) { //object name in console
-			eval('Constructor = function ' + id + '(){return this.create.apply(this, arguments);}');
-		} else {
-			Constructor = function Constructor (){
-				return this.create.apply(this, arguments);
+			eval('Constructor= '+ Constructor.toString().replace('ClanConstructor', id));
+			Constructor.toString = function () {
+				return id;
 			};
 		}
 
