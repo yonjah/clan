@@ -34,12 +34,6 @@
 				!options.create && Object.defineProperty(this, 'create', {value: undefined});
 				return _.extend(this, options);
 			},
-			toString: function clanToString () {
-				return this._id + (this.isInstance()? '(I)' : '');
-			},
-			isInstance: function isInstance () {
-				return this._instance || false;
-			},
 			extend: function clanExtend (obj) {
 				return extend.call(null, this, obj);
 			}
@@ -111,7 +105,8 @@
 	}
 
 	function extend(parent, child) {
-		var obj, Constructor,id;
+		var obj, Constructor,id,
+			expose = ['create', 'extend'];
 		parent = parent.prototype || parent;
 		id = (parent._id ? parent._id + '_':'') + (child.name || 'E');
 
@@ -130,9 +125,10 @@
 		Object.defineProperty(obj, '_id', {value: id});
 
 		Object.keys(child).forEach(superExtend.bind(null, obj, child, parent));
-		Constructor.create = obj.create.bind(obj);
-		Constructor.toString = obj.toString.bind(obj);
-		Constructor.extend = obj.extend.bind(obj);
+
+		expose.forEach(function (key){
+			isFunc(obj[key]) && (Constructor[key] = obj[key].bind(obj));
+		});
 
 		return Constructor;
 	}
