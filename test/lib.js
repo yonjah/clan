@@ -61,7 +61,7 @@ describe('Clan', function(){
 			});
 		});
 
-		describe('extending an base object', function (){
+		describe('extending a base object', function (){
 			var expectedId = baseObjectId + '_' + testID,
 				Cls = clan({name: testID});
 
@@ -167,7 +167,7 @@ describe('Clan', function(){
 
 			it('should be a constructor of ' + testID, function () {
 				Mix.should.be.a.Function;
-				Mix.name.should.eql('ClanMix');
+				Mix.name.should.eql('ClanMixer');
 				(Mix.prototype || false).should.be.ok;
 				Mix.prototype._id.should.eql(testID);
 			});
@@ -216,12 +216,74 @@ describe('Clan', function(){
 
 		});
 
-		describe.skip('extending an base object', function (){
+		describe('mixin a base mixin', function (){
+			var expectedId = baseMixinId + '_' + testID,
+				Mix = clan.mixin({name: testID});
 
+			it('should be a constructor of ' + expectedId, function () {
+				Mix.should.be.a.Function;
+				(Mix.prototype || false).should.be.ok;
+				Mix.prototype._id.should.eql(expectedId);
+			});
+
+			it('should have a implements method', function () {
+				Mix.implements.should.be.a.Function;
+			});
+
+			it('should be able to instance a child', function () {
+				(new Mix()).implements(Mix).should.be.ok;
+				(Mix()).implements(Mix.prototype).should.be.ok;
+			});
+
+			it('should allow accessing parent function with _super', function () {
+				var calls = 0,
+					child = Mix.mixin({name: 'child', implements: function (mix) {
+						calls += 1;
+						return this._super(mix);
+					}}),
+					instance = child({implements: function (mix) {
+						calls += 1;
+						return this._super(mix);
+					}});
+
+				instance.implements(child);
+				calls.should.eql(2);
+			});
 		});
 
-		describe.skip('debug mode', function (){
+		describe('debug mode', function (){
+			var Mix,
+				expectedId = baseMixinId + '_' + testID;
+			before(function(){
+				clan.debug(true);
+				Mix = clan.mixin({name: testID});
+			});
 
+			describe('extending an base mixin', function (){
+				it('should be a constructor Function', function () {
+					Mix.should.be.a.Function;
+					(Mix.prototype || false).should.be.ok;
+				});
+
+				it('should be a constructor of ' + expectedId + ' with name', function () {
+					Mix.prototype._id.should.eql(expectedId);
+					Mix.name.should.eql(expectedId);
+				});
+
+				it('should change class toString to return id', function () {
+					Mix.toString().should.eql(expectedId);
+				});
+			});
+
+			it('should allow accessing original function from _super', function () {
+				var params = {name: 'child', implements: function () {
+						return this._super();
+					}},
+					Child = Mix.mixin(params);
+
+				params.implements.should.be.eql(Child.prototype.implements._target);
+				params.implements.toString().should.be.eql(Child.prototype.implements.toString());
+			});
 		});
 	});
 });
