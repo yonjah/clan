@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "ENVIRONMENT=test ./node_modules/mocha/bin/mocha test",
-    "cov": "npm run lib-cov &&  ENVIRONMENT=test ISTANBUL_REPORTERS=html,text-summary  COVER=1 ./node_modules/mocha/bin/mocha --timeout=20000 --reporter mocha-istanbul",
+    "cov": "npm run lib-cov &&  ENVIRONMENT=test ISTANBUL_REPORTERS=html,text-summary  COVER=clan ./node_modules/mocha/bin/mocha --timeout=20000 --reporter mocha-istanbul",
     "clean": "rm -rf lib-cov cobertura-coverage.xml coverage; true",
     "lib-cov": "npm run clean && ./node_modules/istanbul/lib/cli.js instrument --output lib-cov --no-compact --variable global.__coverage__ lib"
   },
