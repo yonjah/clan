@@ -1,6 +1,6 @@
 {
   "name": "clan",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Yet another inheritance module",
   "main": "index.js",
   "repository": {
@@ -27,6 +27,5 @@
   "author": "Yoni Jah",
   "license": "MIT",
   "dependencies": {
-    "lodash": "~2.4.1"
   }
 }
