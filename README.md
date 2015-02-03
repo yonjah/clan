@@ -132,5 +132,13 @@ carol.hide().attack();  // /*silence*/ woosh woosh
 
 As with Classical inheritance we can use `_super` method to access method on the parent we extended
 
+### Bonus feature
+when in development enable clan debugging immediately after requiring clan -
+```javascript
+var clan = require('clan');
+clan.debug(true);
+```
+
+This will give you some useful information when you inspect your code.
 
 
