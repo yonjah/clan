@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "Yet another inheritance module",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yonjah/clan.git"
+  },
   "devDependencies": {
     "istanbul": "^0.3.2",
     "mocha": "^2.0.1",
