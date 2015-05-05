@@ -26,7 +26,7 @@ describe('Clan', function(){
 		});
 
 		describe('extending a js object', function (){
-			var Cls = clan({},{name: testID});
+			var Cls = clan({},{_name: testID});
 
 			it('should be a constructor of ' + testID, function () {
 				Cls.should.be.a.Function;
@@ -46,7 +46,7 @@ describe('Clan', function(){
 			it('should be extendable', function (){
 				var id = 'child',
 					expectedId = testID + '_' + id,
-					Child = clan(Cls, {name: id});
+					Child = clan(Cls, {_name: id});
 				Child.should.be.a.Function;
 				(Child.prototype || false).should.be.ok;
 				Child.prototype._id.should.eql(expectedId);
@@ -63,7 +63,7 @@ describe('Clan', function(){
 
 		describe('extending a base object', function (){
 			var expectedId = baseObjectId + '_' + testID,
-				Cls = clan({name: testID});
+				Cls = clan({_name: testID});
 
 			it('should be a constructor of ' + expectedId, function () {
 				Cls.should.be.a.Function;
@@ -87,12 +87,12 @@ describe('Clan', function(){
 			it('should be extendable', function (){
 				var id  = 'child',
 					expectedId = Cls.prototype._id + '_' + id,
-					Child = clan(Cls, {name: id});
+					Child = clan(Cls, {_name: id});
 
 				Child.should.be.a.Function;
 				(Child.prototype || false).should.be.ok;
 				Child.prototype._id.should.eql(expectedId);
-				Child = Cls.extend({name: id});
+				Child = Cls.extend({_name: id});
 				Child.should.be.a.Function;
 				(Child.prototype || false).should.be.ok;
 				Child.prototype._id.should.eql(expectedId);
@@ -104,11 +104,11 @@ describe('Clan', function(){
 
 			it('should allow accessing parent function with _super', function () {
 				var calls = 0,
-					Child = Cls.extend({name: 'child', create: function () {
+					Child = Cls.extend({_name: 'child', create: function () {
 						calls += 1;
 						return this._super();
 					}}),
-					Child2 = Child.extend({name: 'child2', create: function () {
+					Child2 = Child.extend({_name: 'child2', create: function () {
 						calls += 1;
 						return this._super();
 					}});
@@ -123,7 +123,7 @@ describe('Clan', function(){
 				expectedId = baseObjectId + '_' + testID;
 			before(function(){
 				clan.debug(true);
-				Cls = clan({name: testID});
+				Cls = clan({_name: testID});
 			});
 
 			describe('extending an base object', function (){
@@ -143,7 +143,7 @@ describe('Clan', function(){
 			});
 
 			it('should allow accessing original function from _super', function () {
-				var params = {name: 'child', create: function () {
+				var params = {_name: 'child', create: function () {
 						return this._super();
 					}},
 					Child = Cls.extend(params);
@@ -163,7 +163,7 @@ describe('Clan', function(){
 		});
 
 		describe('mixin a js object', function (){
-			var Mix = clan.mixin({}, {name: testID});
+			var Mix = clan.mixin({}, {_name: testID});
 
 			it('should be a constructor of ' + testID, function () {
 				Mix.should.be.a.Function;
@@ -179,11 +179,11 @@ describe('Clan', function(){
 			it('should be mixable', function (){
 				var id = 'child',
 					expectedId = testID + '_' + id,
-					Child = clan.mixin(Mix, {name: id});
+					Child = clan.mixin(Mix, {_name: id});
 				Child.should.be.a.Function;
 				(Child.prototype || false).should.be.ok;
 				Child.prototype._id.should.eql(expectedId);
-				Child = Mix.mixin({name: id});
+				Child = Mix.mixin({_name: id});
 				Child.should.be.a.Function;
 				(Child.prototype || false).should.be.ok;
 				Child.prototype._id.should.eql(expectedId);
@@ -218,7 +218,7 @@ describe('Clan', function(){
 
 		describe('mixin a base mixin', function (){
 			var expectedId = baseMixinId + '_' + testID,
-				Mix = clan.mixin({name: testID});
+				Mix = clan.mixin({_name: testID});
 
 			it('should be a constructor of ' + expectedId, function () {
 				Mix.should.be.a.Function;
@@ -237,17 +237,21 @@ describe('Clan', function(){
 
 			it('should allow accessing parent function with _super', function () {
 				var calls = 0,
-					child = Mix.mixin({name: 'child', implements: function (mix) {
+					child = Mix.mixin({_name: 'child', implements: function (mix) {
+						calls += 1;
+						return this;
+					}}),
+					childb = child.mixin({_name: 'child', implements: function (mix) {
 						calls += 1;
 						return this._super(mix);
 					}}),
-					instance = child({implements: function (mix) {
+					instance = childb({implements: function (mix) {
 						calls += 1;
 						return this._super(mix);
 					}});
 
 				instance.implements(child);
-				calls.should.eql(2);
+				calls.should.eql(3);
 			});
 		});
 
@@ -256,7 +260,7 @@ describe('Clan', function(){
 				expectedId = baseMixinId + '_' + testID;
 			before(function(){
 				clan.debug(true);
-				Mix = clan.mixin({name: testID});
+				Mix = clan.mixin({_name: testID});
 			});
 
 			describe('extending an base mixin', function (){
@@ -276,7 +280,7 @@ describe('Clan', function(){
 			});
 
 			it('should allow accessing original function from _super', function () {
-				var params = {name: 'child', implements: function () {
+				var params = {_name: 'child', implements: function () {
 						return this._super();
 					}},
 					Child = Mix.mixin(params);
